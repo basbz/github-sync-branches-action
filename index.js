@@ -10,11 +10,11 @@ async function run() {
     } = github.context;
 
     const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
-    const octokit = new github.GitHub(githubToken);
+    const octokit = github.getOctokit(githubToken)
     const fromBranch = "main"
     const toBranch = "develop"
 
-     const { data: pullRequest } = await octokit.pulls.create({
+    const { data: pullRequest } = await octokit.rest.pulls.create({
         owner: repository.owner.login,
         repo: repository.name,
         head: fromBranch ,
