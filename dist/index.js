@@ -12,7 +12,7 @@ const github = __nccwpck_require__(438);
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-     const {
+    const {
       payload: { repository }
     } = github.context;
 
@@ -20,18 +20,26 @@ async function run() {
     const octokit = github.getOctokit(githubToken)
     const fromBranch = "main"
     const toBranch = "develop"
+    const owner = repository.owner.login
+    const repo = repository.name
 
     const { data: pullRequest } = await octokit.rest.pulls.create({
-        owner: repository.owner.login,
-        repo: repository.name,
-        head: fromBranch ,
-        base: toBranch,
-        title: `sync: ${fromBranch} to ${toBranch}`,
-        body: `sync-branches: New code has just landed in ${fromBranch}, so let's bring ${toBranch} up to speed!`,
-      });
+      owner,
+      repo,
+      head: fromBranch ,
+      base: toBranch,
+      title: `sync: ${fromBranch} to ${toBranch}`,
+      body: `sync-branches: New code has just landed in ${fromBranch}, so let's bring ${toBranch} up to speed!`,
+    });
 
+    
+    const {data} = await octokit.rest.pulls.merge({
+      owner,
+      repo,
+      pull_number: pullRequest.number
+    });
 
-    console.log(pullRequest)
+    console.log(data)
   } catch (error) {
 
     core.setFailed(error.message);
