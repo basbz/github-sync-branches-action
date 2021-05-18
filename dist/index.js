@@ -12,16 +12,16 @@ const github = __nccwpck_require__(438);
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const {
-      payload: { repository }
-    } = github.context;
 
     const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
+    const fromBranch = core.getInput("FROM_BRANCH", { required: true });
+    const toBranch = core.getInput("TO_BRANCH", { required: true });
+
+    const {
+      payload: { repository: {name: repo, owner: {login: owner}} }
+    } = github.context;
+
     const octokit = github.getOctokit(githubToken)
-    const fromBranch = "main"
-    const toBranch = "develop"
-    const owner = repository.owner.login
-    const repo = repository.name
 
     const { data: pullRequest } = await octokit.rest.pulls.create({
       owner,
