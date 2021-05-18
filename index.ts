@@ -1,6 +1,5 @@
-const core = require('@actions/core');
-const github = require("@actions/github");
-
+import core from '@actions/core'
+import github from "@actions/github"
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -10,9 +9,16 @@ async function run() {
     const fromBranch = core.getInput("FROM_BRANCH", { required: true });
     const toBranch = core.getInput("TO_BRANCH", { required: true });
 
+
     const {
-      payload: { repository: {name: repo, owner: {login: owner}} }
+      payload: { repository }
     } = github.context;
+
+    if(repository === undefined) {
+      throw new Error("Undefined Repo!")
+    }
+
+    const {name: repo, owner: {login: owner}} = repository
 
     const octokit = github.getOctokit(githubToken)
 
